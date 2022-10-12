@@ -1,0 +1,8 @@
+version: "3"
+services:
+ grpcbin:
+  image: moul/grpcbin
+  container_name: grpcbin.backends
+  ports:
+   - 8900:9000
+   - 8901:9001

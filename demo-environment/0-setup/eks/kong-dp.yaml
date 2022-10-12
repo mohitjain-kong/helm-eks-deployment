@@ -1,0 +1,65 @@
+# Basic configuration for Kong Enterprise as a hybrid mode data plane node.
+# It depends on the presence of a control plane release, as shown in
+# https://github.com/Kong/charts/blob/main/charts/kong/example-values/minimal-kong-enterprise-hybrid-control.yaml
+#
+# The "env.cluster_control_plane" value must be changed to your control plane
+# instance's cluster Service hostname. Search "CHANGEME" to find it in this
+# example.
+#
+# Hybrid mode requires a certificate. See https://github.com/Kong/charts/blob/main/charts/kong/README.md#certificates
+# to create one.
+image:
+  repository: kong/kong-gateway
+  tag: "2.8"
+env:
+  role: data_plane
+  cluster_control_plane: kong-enterprise-control-plane-1-kong-cluster.kong-hybrid-cp.svc.cluster.local:8005
+  cluster_telemetry_endpoint: kong-enterprise-control-plane-1-kong-clustertelemetry.kong-hybrid-cp.svc.cluster.local:8006 # Enterprise-only
+  lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
+  cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  proxy_url:  http://1.2.3.4:80
+  # kong_proxy_listen: 0.0.0.0:9000 # to sync 9000 port locally to hit proxy APIs
+  # kong_admin_listen: 0.0.0.0:9001 # to sync 9001 port locally to hit ADMIN APIs
+  # admin_gui_listen: 0.0.0.0:9002 # to sync 9002 port locally to open Kong Manager
+proxy:
+  enabled: true
+  type: LoadBalancer
+  http:
+    enabled: true
+    servicePort: 80
+    containerPort: 8000
+  tls:
+    # Enable HTTPS listen for the proxy
+    enabled: false
+    servicePort: 8443
+    containerPort: 8443
+    # Set a target port for the TLS port in proxy service
+    # overrideServiceTargetPort: 8000
+    # Set a nodePort which is available if service type is NodePort
+    # nodePort: 32443
+    # Additional listen parameters, e.g. "reuseport", "backlog=16384"
+    parameters:
+      - http2
+manager:
+  enabled: false
+  type: LoadBalancer
+  http:
+    enabled: true
+    servicePort: 8002
+    containerPort: 8002
+secretVolumes:
+  - kong-cluster-cert
+ingressController:
+  enabled: false
+enterprise:
+  enabled: false
+  # See instructions regarding enterprise licenses at https://github.com/Kong/charts/blob/master/charts/kong/README.md#kong-enterprise-license
+  license_secret: kong-enterprise-license # CHANGEME
+  # To sync vitals with control plane, please deploy license into control plane using Admin API. Please follow https://docs.konghq.com/gateway/2.8.x/plan-and-deploy/licenses/deploy-license/#deploy-the-license
+  vitals:
+    enabled: false
+portal:
+  enabled: false
+portalapi:
+  enabled: false

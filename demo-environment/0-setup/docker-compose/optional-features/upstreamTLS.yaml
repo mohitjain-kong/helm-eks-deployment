@@ -1,0 +1,10 @@
+version: "3"
+services:
+ upstramtls:
+  image: svenwal/mtlsserver:0.4
+  restart: always
+  container_name: upstreamtls.backends
+  hostname: upstreamtls
+  ports:
+   - 8903:80
+   - 8904:443

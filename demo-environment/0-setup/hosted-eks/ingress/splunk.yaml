@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: splunk
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "splunk.service-connectivity.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: splunk
+            port: 
+              number: 10401
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: splunk-admin
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "splunk-admin.service-connectivity.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: splunk-admin
+            port: 
+              number: 8089

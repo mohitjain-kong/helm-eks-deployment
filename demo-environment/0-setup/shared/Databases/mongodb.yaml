@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:4.2
+          env:
+            - name: GRAYLOG_MONGODB_URI
+              value: "mongodb.databases://mongo/graylog"
+            - name: GRAYLOG_PASSWORD_SECRET
+              value: "somepasswordjepcme"
+            - name: GRAYLOG_ROOT_PASSWORD_SHA2
+              value: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+            - name: GRAYLOG_HTTP_EXTERNAL_URI
+              value: "http://localhost:13140/"

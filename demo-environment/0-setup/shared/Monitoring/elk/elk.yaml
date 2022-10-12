@@ -1,0 +1,127 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+spec:
+  ports:
+  - name: elasticsearch
+    port: 9200
+    targetPort: 9200
+    protocol: TCP
+  selector:
+    app: elasticsearch
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+spec:
+  type: NodePort
+  ports:
+  - name: kibana
+    port: 5601
+    targetPort: 5601
+    nodePort: 31110
+    protocol: TCP
+  selector:
+    app: kibana
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filebeat
+spec:
+  ports:
+  - name: filebeat
+    port: 9000
+    targetPort: 9000
+    protocol: TCP
+  selector:
+    app: filebeat
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.0.0-beta1
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: xpack.security.enabled
+              value: "false"
+            - name: ES_JAVA_OPTS
+              value: "-Xms256m -Xmx256m"
+          ports:
+            - containerPort: 9200
+              name: http
+              protocol: TCP
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kibana
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.0.0-beta1
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: filebeat
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: filebeat
+    spec:
+      containers:
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat:8.0.0-beta1
+          args: [
+              "-e"
+            ]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+          - name: filebeat-config
+            mountPath: /usr/share/filebeat/filebeat.yml
+            subPath: filebeat.yml
+          - name: elasticsearchtemplate
+            mountPath: /usr/share/filebeat/elasticsearch_template.json
+            subPath: elasticsearch_template.json
+          ports:
+            - containerPort: 9000
+              name: http
+              protocol: TCP
+      volumes:
+        - name: filebeat-config
+          configMap:
+            name: efk-config
+            items:
+            - key: filebeat.yml
+              path: filebeat.yml
+        - name: elasticsearchtemplate
+          configMap:
+            name: efk-config
+            items:
+            - key: elasticsearch_template.json
+              path: elasticsearch_template.json

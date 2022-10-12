@@ -1,0 +1,11 @@
+version: "3"
+services:
+ vault:
+  image: vault:latest
+  container_name: vault
+  ports:
+   - 8200:8200
+  environment:
+   - VAULT_DEV_ROOT_TOKEN_ID=KongRul3z!
+  cap_add:
+   - IPC_LOCK

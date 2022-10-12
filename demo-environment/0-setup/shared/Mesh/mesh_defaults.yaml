@@ -1,0 +1,60 @@
+apiVersion: kuma.io/v1alpha1
+kind: Mesh
+metadata:
+  name: default
+spec:
+  mtls:
+    enabledBackend: demo-created-cert-backend
+    backends:
+    - name: demo-created-cert-backend
+      type: builtin
+  metrics:
+    enabledBackend: prometheus-demo-default
+    backends:
+    - name: prometheus-demo-default
+      type: prometheus
+  logging:
+    defaultBackend: filebeat
+    backends:
+    - name: filebeat
+      format: '{"start_time": "%START_TIME%", "source": "%KUMA_SOURCE_SERVICE%", "destination": "%KUMA_DESTINATION_SERVICE%", "source_address": "%KUMA_SOURCE_ADDRESS_WITHOUT_PORT%", "destination_address": "%UPSTREAM_HOST%", "duration_millis": "%DURATION%", "bytes_received": "%BYTES_RECEIVED%", "bytes_sent": "%BYTES_SENT%"}'
+      type: tcp
+      conf:
+        address: filebeat-mesh-tcp.monitoring:9001
+  tracing:
+    defaultBackend: zipkin-collector
+    backends:
+    - name: zipkin-collector
+      type: zipkin
+      sampling: 100
+      conf:
+        url: http://zipkin.tracing:9411/api/v2/spans
+---
+apiVersion: kuma.io/v1alpha1
+kind: TrafficLog
+metadata:
+  name: all-traffic
+mesh: default
+spec:
+  # This TrafficLog policy applies all traffic in that Mesh.
+  sources:
+    - match:
+        kuma.io/service: '*'
+  destinations:
+    - match:
+        kuma.io/service: '*'
+  conf:
+    backend: filebeat
+---
+apiVersion: kuma.io/v1alpha1
+kind: AccessRoleBinding
+metadata:
+  name: default
+spec:
+  subjects:
+  - type: Group
+    name: mesh-system:admin
+  - type: Group
+    name: system:masters
+  roles:
+  - admin

@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: counter
+  namespace: kuma-demo
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "counter.service-connectivity.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: demo-app
+            port: 
+              number: 5000

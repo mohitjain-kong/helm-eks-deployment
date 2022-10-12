@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpbin
+  annotations:
+    ingress.kubernetes.io/service-upstream: "true"
+    kuma.io/demo-backend-service: example-backends
+spec:
+  type: NodePort
+  ports:
+  - name: httpbin
+    targetPort: 8080
+    port: 8080
+    protocol: TCP
+  selector:
+    app: httpbin
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpbin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: httpbin
+  template:
+    metadata:
+      labels:
+        app: httpbin
+      annotations:
+        kuma.io/demo-backend: example-backends
+    spec:
+      containers:
+        - name: httpbin
+          image: svenwal/httpbin
+          ports:
+            - containerPort: 8080

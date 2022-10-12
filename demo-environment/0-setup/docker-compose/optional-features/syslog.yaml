@@ -1,0 +1,12 @@
+version: "3"
+services:
+ syslog:
+  image: pbertera/syslogserver
+  container_name: syslog.monitoring
+  ports:
+   - 8130:80
+  environment:
+   - SYSLOG_USERNAME=kong  
+   - SYSLOG_PASSWORD=kong
+   - CHECK_UPGRADE=false
+   - EXPORT=true

@@ -1,0 +1,11 @@
+version: "3"
+services:
+ kongmap:
+  image: yesinteractive/kongmap
+  restart: always
+  container_name: kongmap
+  hostname: kongmap
+  environment:
+   - 'KONGMAP_CLUSTERS_JSON={"SEdemoEnvironment":{"kong_admin_api_url":"http://kong-ent1:8001","kong_edit_config":"true","kong_ent":"true","kong_ent_token":"KongRul3z!","kong_ent_token_name":"Kong-Admin-Token","kong_ent_manager_url":"http://localhost:8002"}}'
+  ports:
+   - 8009:8100

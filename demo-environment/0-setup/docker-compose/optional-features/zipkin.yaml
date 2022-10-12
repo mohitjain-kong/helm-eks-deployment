@@ -1,0 +1,27 @@
+version: "3"
+services:
+ zipkin:
+   container_name: zipkin.tracing
+   image: openzipkin/zipkin
+   networks:
+      default:
+        aliases:
+          - zipkin
+   ports:
+     - 8141:9411
+ tracing-frontend:
+   container_name: frontend.tracing
+   image: ghcr.io/openzipkin/brave-example
+   networks:
+      default:
+        aliases:
+          - frontend
+   entrypoint: start-frontend
+ tracing-backend:
+   container_name: backend.tracing
+   image: ghcr.io/openzipkin/brave-example
+   networks:
+      default:
+        aliases:
+          - backend
+   entrypoint: start-backend

@@ -1,0 +1,7 @@
+{
+  "cookie_name": "admin_session",
+  "cookie_samesite": "off",
+  "secret": "admin-secret",
+  "cookie_secure": false,
+  "storage": "kong"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "Namespace",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "kong-enterprise",
+    "labels": {
+      "name": "kong-enterprise"
+    }
+  }
+}

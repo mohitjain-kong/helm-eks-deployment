@@ -1,0 +1,11 @@
+version: "3"
+services:
+ datadog:
+  container_name: datadog.monitoring
+  image: datadog/agent:latest
+  environment:
+   - DD_API_KEY=${DD_API_KEY}
+   - DD_HOSTNAME=datadog
+   - DD_SITE=datadoghq.com
+   - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+   - DD_BIND_HOST=0.0.0.0

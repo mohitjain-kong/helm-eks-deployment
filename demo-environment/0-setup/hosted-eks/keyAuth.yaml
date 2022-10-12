@@ -1,0 +1,33 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: demo-key-auth
+  namespace: default
+plugin: key-auth
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-key-auth
+  namespace: default
+  annotations:
+    konghq.com/plugins: demo-key-auth
+    konghq.com/strip-path: "true"
+    kubernetes.io/ingress.class: kong
+spec:
+  tls:
+    - hosts:
+      - test.service-connectivity.com
+  rules:
+  - host: test.service-connectivity.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: httpbin
+            port: 
+              number: 80

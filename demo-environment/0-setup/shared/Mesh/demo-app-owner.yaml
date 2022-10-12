@@ -1,0 +1,36 @@
+apiVersion: kuma.io/v1alpha1
+kind: AccessRole
+metadata:
+  name: demo-app-owner
+spec:
+  rules:
+    - mesh: default
+      types: ["TrafficPermission", "RateLimit"]
+      access: ["CREATE", "DELETE", "UPDATE"]
+      when:
+        - destinations:
+            match:
+              kuma.io/service: demo-app_kuma-demo_svc_5000
+        - destinations:
+            match:
+              kuma.io/service: redis_kuma-demo_svc_6379
+    - mesh: default
+      types: ["TrafficRoute", "HealthCheck", "CircuitBreaker", "FaultInjection", "Retry", "Timeout", "TrafficLog"]
+      access: ["CREATE", "DELETE", "UPDATE"]
+      when:
+        - sources:
+            match:
+              kuma.io/service: demo-app_kuma-demo_svc_5000
+        - destinations:
+            match:
+              kuma.io/service: redis_kuma-demo_svc_6379
+    - mesh: default
+      types: ["TrafficTrace", "ProxyTemplate"]
+      access: ["CREATE", "DELETE", "UPDATE"]
+      when:
+        - selectors:
+            match:
+              kuma.io/service: demo-app_kuma-demo_svc_5000
+        - selectors:
+            match:
+              kuma.io/service: redis_kuma-demo_svc_6379

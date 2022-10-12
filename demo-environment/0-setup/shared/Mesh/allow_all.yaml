@@ -1,0 +1,17 @@
+---
+apiVersion: kuma.io/v1alpha1
+kind: AccessRoleBinding
+metadata:
+  name: default
+spec:
+  subjects:
+  - type: Group
+    name: mesh-system:authenticated
+  - type: Group
+    name: mesh-system:unauthenticated
+  - type: Group
+    name: system:authenticated
+  - type: Group
+    name: system:unauthenticated
+  roles:
+  - admin

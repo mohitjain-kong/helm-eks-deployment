@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kong-migration
+spec:
+  template:
+    metadata:
+      name: kong-migration
+    spec:
+      containers:
+      - name: kong-migration
+        image: kong/kong-gateway:2.8.1.2-alpine
+        env:
+         - name: KONG_NGINX_DAEMON
+           value: 'off'
+         - name: KONG_PG_PASSWORD
+           value: kong
+         - name: KONG_PG_HOST
+           value: postgres
+         - name: KONG_LICENSE_DATA
+           valueFrom:
+             secretKeyRef:
+               name: kong-license
+               key: KONG_LICENSE_DATA
+        command: [ "/bin/sh", "-c", "kong migrations bootstrap" ]
+      restartPolicy: Never

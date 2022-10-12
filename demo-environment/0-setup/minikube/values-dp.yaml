@@ -1,0 +1,263 @@
+# Default values for Kong's Helm Chart.
+# Declare variables to be passed into your templates.
+#
+# Sections:
+# - Kong parameters
+# - Ingress Controller parameters
+# - Postgres sub-chart parameters
+# - Miscellaneous parameters
+# - Kong Enterprise parameters
+
+# -----------------------------------------------------------------------------
+# Kong parameters
+# -----------------------------------------------------------------------------
+
+# Specify Kong configurations
+# Kong configurations guide https://docs.konghq.com/latest/configuration
+# Values here take precedence over values from other sections of values.yaml,
+# e.g. setting pg_user here will override the value normally set when postgresql.enabled
+# is set below. In general, you should not set values here if they are set elsewhere.
+env:
+  database: "off"
+  role: data_plane
+  cluster_cert: "/etc/secrets/kong-hybrid-certificate/cluster.crt"
+  cluster_cert_key: "/etc/secrets/kong-hybrid-certificate/cluster.key"
+  cluster_control_plane: kong-enterprise-kong-cluster.kong-enterprise.svc.cluster.local:8005
+  cluster_telemetry_endpoint: kong-enterprise-kong-clustertelemetry.kong-enterprise.svc.cluster.local:8006
+  nginx_worker_processes: "1"
+  mem_cache_size: 12M
+  proxy_access_log: /dev/stdout
+  admin_access_log: /dev/stdout
+  admin_gui_access_log: /dev/stdout
+  portal_api_access_log: /dev/stdout
+  proxy_error_log: /dev/stderr
+  admin_error_log: /dev/stderr
+  admin_gui_error_log: /dev/stderr
+  portal_api_error_log: /dev/stderr
+  prefix: /kong_prefix/
+  proxy_url: http://localhost:31000
+  admin_gui_url: http://localhost:31002
+  admin_api_uri: http://localhost:31001
+  portal_gui_host: localhost:31003
+  portal_api_url: http://localhost:31004
+  portal_gui_protocol: http
+  ontrusted_lua: on
+
+
+# Specify Kong's Docker image and repository details here
+image:
+  repository: kong/kong-gateway
+  tag: 2.8.1.2
+  pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## If using the official Kong Enterprise registry above, you MUST provide a secret.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ##
+  # pullSecrets:
+  # - bintray-kong
+# Specify Kong admin API service and listener configuration
+admin:
+  # Enable creating a Kubernetes service for the admin API
+  # Disabling this is recommended for most ingress controller configurations
+  # Enterprise users that wish to use Kong Manager with the controller should enable this
+  enabled: false
+
+# Specify Kong proxy service and listener configuration
+proxy:
+  # Enable creating a Kubernetes service for the proxy
+  enabled: true
+  type: NodePort
+  annotations: 
+    kubernetes.io/ingress.class: alb
+
+  http:
+    # Enable plaintext HTTP listen for the proxy
+    enabled: true
+    servicePort: 80
+    containerPort: 8000
+    # Set a nodePort which is available if service type is NodePort
+    nodePort: 31000
+    # Additional listen parameters, e.g. "reuseport", "backlog=16384"
+    parameters: []
+  tls:
+    # Enable HTTPS listen for the proxy
+    enabled: false
+    servicePort: 443
+    containerPort: 8443
+    # Set a target port for the TLS port in proxy service, useful when using TLS
+    # termination on an ELB.
+    # overrideServiceTargetPort: 8000
+    # Set a nodePort which is available if service type is NodePort
+    # nodePort: 32443
+    # Additional listen parameters, e.g. "reuseport", "backlog=16384"
+    parameters:
+    - http2
+  # Kong proxy ingress settings.
+  # Note: You need this only if you are using another Ingress Controller
+  # to expose Kong outside the k8s cluster.
+  ingress:
+    # Enable/disable exposure using ingress.
+    enabled: false
+    hosts: []
+    # TLS section. Unlike other ingresses, this follows the format at
+    # https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
+    # tls:
+    # - hosts:
+    #   - 1.example.com
+    #   secretName: example1-com-tls-secret
+    # - hosts:
+    #   - 2.example.net
+    #   secretName: example2-net-tls-secret
+    # Map of ingress annotations.
+    annotations: {}
+    # Ingress path.
+    path: /
+  externalIPs: []
+# Custom Kong plugins can be loaded into Kong by mounting the plugin code
+# into the file-system of Kong container.
+# The plugin code should be present in ConfigMap or Secret inside the same
+# namespace as Kong is being installed.
+# The `name` property refers to the name of the ConfigMap or Secret
+# itself, while the pluginName refers to the name of the plugin as it appears
+# in Kong.
+# Subdirectories (which are optional) require separate ConfigMaps/Secrets.
+# "path" indicates their directory under the main plugin directory: the example
+# below will mount the contents of kong-plugin-rewriter-migrations at "/opt/kong/rewriter/migrations".
+plugins: {}
+# configMaps:
+# - pluginName: rewriter
+#   name: kong-plugin-rewriter
+#   subdirectories:
+#   - name: kong-plugin-rewriter-migrations
+#     path: migrations
+# secrets:
+# - pluginName: rewriter
+#   name: kong-plugin-rewriter
+# Inject specified secrets as a volume in Kong Container at path /etc/secrets/{secret-name}/
+# This can be used to override default SSL certificates.
+# Be aware that the secret name will be used verbatim, and that certain types
+# of punctuation (e.g. `.`) can cause issues.
+# Example configuration
+# secretVolumes:
+# - kong-proxy-tls
+# - kong-admin-tls
+secretVolumes:
+- kong-hybrid-certificate
+# Set runMigrations to run Kong migrations
+runMigrations: true
+# Kong's configuration for DB-less mode
+# Note: Use this section only if you are deploying Kong in DB-less mode
+# and not as an Ingress Controller.
+dblessConfig:
+  # Either Kong's configuration is managed from an existing ConfigMap (with Key: kong.yml)
+  configMap: ""
+  # Or the configuration is passed in full-text below
+  config:
+    _format_version: "1.1"
+    services:
+    # Example configuration
+    # - name: example.com
+    #   url: http://example.com
+    #   routes:
+    #   - name: example
+    #     paths:
+    #     - "/example"
+# -----------------------------------------------------------------------------
+# Ingress Controller parameters
+# -----------------------------------------------------------------------------
+
+# Kong Ingress Controller's primary purpose is to satisfy Ingress resources
+# created in k8s.  It uses CRDs for more fine grained control over routing and
+# for Kong specific configuration.
+ingressController:
+  enabled: false
+
+
+
+# Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+# affinity: {}
+
+# Tolerations for pod assignment
+# Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+tolerations: []
+# Node labels for pod assignment
+# Ref: https://kubernetes.io/docs/user-guide/node-selection/
+nodeSelector: {}
+# Annotation to be added to Kong pods
+podAnnotations: 
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8100"
+  kuma.io/gateway: "enabled"
+# Kong pod count
+replicaCount: 1
+# Annotations to be added to Kong deployment
+deploymentAnnotations:
+  kuma.io/gateway: enabled
+  traffic.sidecar.istio.io/includeInboundPorts: ""
+# Enable autoscaling using HorizontalPodAutoscaler
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  ## targetCPUUtilizationPercentage only used if the cluster doesn't support autoscaling/v2beta
+  targetCPUUtilizationPercentage:
+  ## Otherwise for clusters that do support autoscaling/v2beta, use metrics
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+# Kong Pod Disruption Budget
+podDisruptionBudget:
+  enabled: false
+  maxUnavailable: "50%"
+podSecurityPolicy:
+  enabled: false
+priorityClassName: ""
+# securityContext for Kong pods.
+securityContext:
+  runAsUser: 1000
+serviceMonitor:
+  # Specifies whether ServiceMonitor for Prometheus operator should be created
+  enabled: false
+  # interval: 10s
+  # Specifies namespace, where ServiceMonitor should be installed
+  # namespace: monitoring
+  # labels:
+  #   foo: bar
+# -----------------------------------------------------------------------------
+# Kong Enterprise parameters
+# -----------------------------------------------------------------------------
+
+# Toggle Kong Enterprise features on or off
+# RBAC and SMTP configuration have additional options that must all be set together
+# Other settings should be added to the "env" settings below
+enterprise:
+  enabled: true
+  # Kong Enterprise license secret name
+  # This secret must contain a single 'license' key, containing your base64-encoded license data
+  # The license secret is required for all Kong Enterprise deployments
+  license_secret: kong-enterprise-license
+  vitals:
+    enabled: true
+  portal:
+    enabled: false
+  rbac:
+    enabled: false
+  smtp:
+    enabled: false
+
+manager:
+  # Enable creating a Kubernetes service for Kong Manager
+  enabled: false
+  
+portal:
+  # Enable creating a Kubernetes service for the Developer Portal
+  enabled: false
+ 
+portalapi:
+  # Enable creating a Kubernetes service for the Developer Portal API
+  enabled: false

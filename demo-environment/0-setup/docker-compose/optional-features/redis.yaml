@@ -1,0 +1,8 @@
+version: "3"
+services:
+ redis:
+  image: redis
+  restart: always
+  container_name: redis.databases
+  hostname: redis.databases
+  command: redis-server --requirepass kong

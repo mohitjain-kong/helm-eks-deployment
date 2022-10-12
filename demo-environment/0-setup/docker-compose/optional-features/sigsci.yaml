@@ -1,0 +1,9 @@
+version: "3"
+services:
+ signalsciences:
+  image: signalsciences/sigsci-agent
+  container_name: signalsciences
+  environment:
+   - SIGSCI_ACCESSKEYID=ea916d55-2e1f-4e83-a44a-992faa42e41e
+   - SIGSCI_SECRETACCESSKEY=hnDbdIN86NOq6iAGz9umqtCCAR9mbSJk0n8kzfbacJs
+   - SIGSCI_RPC_ADDRESS=signalsciences:737

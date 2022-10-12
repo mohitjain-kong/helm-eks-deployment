@@ -1,0 +1,52 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kong-enterprise
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        name: kong-enterprise
+        app: kong
+    spec:
+      containers:
+      - name: kong
+        image: kong/kong-gateway:2.8.1.2-alpine
+        env:
+          - name: KONG_ADMIN_LISTEN
+            value: '0.0.0.0:8001, 0.0.0.0:8444 ssl'
+          - name: KONG_PG_PASSWORD
+            value: kong
+          - name: KONG_PG_HOST
+            value: postgres
+          - name: KONG_PORTAL
+            value: 'on'
+          - name: KONG_PORTAL_GUI_LISTEN
+            value: '0.0.0.0:8003, 0.0.0.0:8446 ssl'
+          - name: KONG_PORTAL_API_LISTEN
+            value: '0.0.0.0:8004, 0.0.0.0:8447 ssl'
+          - name: KONG_ADMIN_GUI_URL
+            value: 'admin_gui_url'
+          - name: KONG_PORTAL_GUI_HOST
+            value: 'portal_gui_host'
+          - name: KONG_PORTAL_API_URL
+            value: 'portal_api_url'
+          - name: KONG_PORTAL_GUI_PROTOCOL
+            value: http
+          - name: KONG_PORTAL_SESSION_CONF
+            value: '{"storage":"kong","cookie_name":"portal_session","secret":"super-secret","cookie_secure":false}'
+          - name: KONG_PORTAL_AUTH
+            value: basic-auth
+          - name: KONG_ADMIN_GUI_LISTEN
+            value: '0.0.0.0:8002, 0.0.0.0:8445 ssl'
+          - name: KONG_ADMIN_API_URI
+            value: 'admin_api_url'
+          - name: KONG_LICENSE_DATA
+            valueFrom:
+              secretKeyRef:
+                name: kong-license
+                key: KONG_LICENSE_DATA
+          - name: KONG_ANONYMOUS_REPORTS
+            value: 'off'

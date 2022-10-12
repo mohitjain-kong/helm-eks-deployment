@@ -1,0 +1,209 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bankong
+  labels:
+    kuma.io/sidecar-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bankong-backends
+  labels:
+    kuma.io/sidecar-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: bankong-database
+  labels:
+    kuma.io/sidecar-injection: enabled
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  annotations:
+    80.service.kuma.io/protocol: http
+spec:
+  ports:
+  - name: frontend
+    targetPort: 80
+    port: 80
+    protocol: TCP
+    appProtocol: http
+  selector:
+    app: frontend
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: svenwal/bankong-frontend:latest
+          env:
+            - name: BANKONG_TRANSACTIONS_BACKEND_URL
+              value: "http://backend-transactions.bankong:3000"
+            - name: BANKONG_ORDERS_BACKEND_URL
+              value: "http://backend-orders.bankong:3000"
+          ports:
+            - containerPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend
+  namespace: bankong
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "bankong.local"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port: 
+              number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-transactions
+  annotations:
+    3000.service.kuma.io/protocol: http
+spec:
+  ports:
+  - name: backend-transactions
+    targetPort: 3000
+    port: 3000
+    protocol: TCP
+    appProtocol: http
+  selector:
+    app: backend-transactions
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-transactions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-transactions
+  template:
+    metadata:
+      labels:
+        app: backend-transactions
+    spec:
+      containers:
+        - name: backend-transactions
+          image: svenwal/bankong-backend-transactions:latest
+          env:
+            - name: BACKEND_REGION
+              value: local-laptop
+            - name: BACKEND_DATACENTER
+              value: Mac
+            - name: BACKEND_ARCHITECTURE
+              value: Kubernetes
+            - name: BACKEND_FLAG
+              value: 🍏
+          ports:
+            - containerPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-transactions 
+  namespace: bankong
+  annotations:
+    konghq.com/strip-path: "true"
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "bankong.local"
+    http:
+      paths:
+      - path: /api/v1
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-transactions
+            port: 
+              number: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-orders
+  annotations:
+    3000.service.kuma.io/protocol: http
+spec:
+  ports:
+  - name: backend-transactions
+    targetPort: 3000
+    port: 3000
+    protocol: TCP
+    appProtocol: http
+  selector:
+    app: backend-orders
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-orders
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-orders
+  template:
+    metadata:
+      labels:
+        app: backend-orders
+    spec:
+      containers:
+        - name: backend-orders
+          image: svenwal/bankong-backend-orders:latest
+          ports:
+            - containerPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: backend-orders
+  namespace: bankong
+  annotations:
+    konghq.com/strip-path: "true"
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "bankong.local"
+    http:
+      paths:
+      - path: /api/orders/v1/
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-orders
+            port: 
+              number: 3000
+
+          

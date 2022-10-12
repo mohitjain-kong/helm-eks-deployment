@@ -1,0 +1,17 @@
+version: "3"
+services:
+ httpbin:
+  image: svenwal/httpbin
+  container_name: httpbin.backends
+  ports:
+   - 81:8080
+ just-another-httpbin:
+  image: svenwal/httpbin
+  container_name: just-another-httpbin.backends
+  ports:
+   - 8181:8080
+ placeholder:
+  image: svenwal/jsonplaceholder
+  container_name: placeholder.backends
+  ports:
+   - 3005:3000

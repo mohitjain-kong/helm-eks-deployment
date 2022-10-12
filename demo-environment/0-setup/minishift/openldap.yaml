@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap-gui
+spec:
+  ports:
+  - name: ldap-gui
+    targetPort: 80
+    port: 80
+    protocol: TCP
+  selector:
+    app: ldap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap
+spec:
+  ports:
+  - name: ldap
+    port: 389
+    targetPort: 389
+    protocol: TCP
+  selector:
+    app: ldap
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: ldap
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ldap
+    spec:
+      containers:
+        - name: ldap
+          image: svenwal/openldap:0.3
+          env:
+            - name: LDAP_PASSWORD
+              value: KongRul3z!
+            - name: LDAP_ORGANISATION
+              value: "Kong Demo LDAP Server"
+            - name: LDAP_DOMAIN
+              value: apim.eu
+            - name: LDAP_SERVERNAME
+              value: ldap
+            - name: LDAP_USER_LOGIN
+              value: demo
+            - name: LDAP_USER_FIRSTNAME
+              value: Demo
+            - name: LDAP_USER_LASTNAME
+              value: User
+            - name: LDAP_USER_EMAIL
+              value: demo@apim.eu
+            - name: LDAP_USER_PASSWORD
+              value: KongRul3z!
+

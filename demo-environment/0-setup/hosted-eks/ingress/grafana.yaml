@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+  - host: "grafana.service-connectivity.com"
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port: 
+              number: 3000

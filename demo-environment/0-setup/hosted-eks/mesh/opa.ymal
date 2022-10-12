@@ -1,0 +1,12 @@
+apiVersion: kuma.io/v1alpha1
+kind: OPAPolicy
+mesh: default
+metadata: 
+  name: opa-policy-das
+spec: 
+  selectors: 
+    - match: 
+        kuma.io/service: '*'
+  conf: 
+    agentConfig: 
+      inlineString: "services:\n  - name: styra\n    url: http://slp-b5c53994b651498aaa569906904d67cf:8080/v1\nlabels:\n  system-id: \"b5c53994b651498aaa569906904d67cf\"\n  system-type: template.kong-mesh:1.0\nbundle:\n  name: systems/b5c53994b651498aaa569906904d67cf\n  polling:\n    max_delay_seconds: 15\n    min_delay_seconds: 10\n  prefix: bundles\n  service: styra\ndecision_logs:\n  reporting:\n    max_delay_seconds: 15\n    min_delay_seconds: 10\n    upload_size_limit_bytes: 131072\n  service: styra\ndefault_decision: main/main\nstatus:\n  service: styra\n"

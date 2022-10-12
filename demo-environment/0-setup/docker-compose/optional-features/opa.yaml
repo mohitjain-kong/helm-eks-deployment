@@ -1,0 +1,8 @@
+version: "3"
+services:
+  opa:
+    image: openpolicyagent/opa:latest
+    container_name: opa.idp
+    command: "run --server --log-level debug"
+    ports:
+      - 8303:8181

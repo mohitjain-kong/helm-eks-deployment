@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kongmap
+spec:
+  type: NodePort
+  ports:
+  - name: kongmap
+    port: 8100
+    targetPort: 8100
+    nodePort: 31009
+    protocol: TCP
+  selector:
+    app: kongmap
+
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: kongmap
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kongmap
+      annotations:
+        kuma.io/gateway: enabled
+    spec:
+      containers:
+        - name: kongmap
+          image: yesinteractive/kongmap
+          env:
+            - name: KONGMAP_CLUSTERS_JSON
+              value: '{"SEdemoEnvironment":{"kong_admin_api_url":"http://kong-enterprise-kong-admin.kong-enterprise:8001","kong_edit_config":"true","kong_ent":"true","kong_ent_token":"KongRul3z!","kong_ent_token_name":"Kong-Admin-Token","kong_ent_manager_url":"http://localhost:9002"}}'

@@ -1,0 +1,4 @@
+#!/bin/bash
+export BINTRAY_USER=
+export BINTRAY_PASSWORD=
+export BINTRAY_EMAIL=

@@ -1,0 +1,7 @@
+{
+  "cookie_name": "portal_session",
+  "secret": "portal-secret",
+  "cookie_secure": false,
+  "storage": "kong",
+  "cookie_domain": "service-connectivity.com"
+}

@@ -1,0 +1,235 @@
+# Kong for Kubernetes with Kong Enterprise with Enterprise features enabled and
+# exposed via TLS-enabled Ingresses. Before installing:
+# * Several settings (search for the string "CHANGEME") require user-provided
+#   Secrets. These Secrets must be created before installation.
+# * Ingresses reference example "<service>.kong.CHANGEME.example" hostnames. These must
+#   be changed to an actual hostname that resolve to your proxy.
+# * Ensure that your session configurations create cookies that are usable
+#   across your services. The admin session configuration must create cookies
+#   that are sent to both the admin API and Kong Manager, and any Dev Portal
+#   instances with authentication must create cookies that are sent to both
+#   the Portal and Portal API.
+
+image:
+  repository: kong/kong-gateway
+  tag: 2.8.1.2-alpine
+  pullPolicy: IfNotPresent
+
+env:
+  database: postgres
+  password: KongRul3z!
+  proxy_access_log: /dev/stdout
+  admin_access_log: /dev/stdout
+  admin_gui_access_log: /dev/stdout
+  portal_api_access_log: /dev/stdout
+  proxy_error_log: /dev/stderr
+  admin_error_log: /dev/stderr
+  admin_gui_error_log: /dev/stderr
+  portal_api_error_log: /dev/stderr
+  prefix: /kong_prefix/
+  ontrusted_lua: on
+
+  proxy_url: http://proxy.service-connectivity.com
+  admin_api_uri: http://admin.service-connectivity.com
+  admin_gui_url: http://manager.service-connectivity.com
+  portal_gui_host: portal.service-connectivity.com
+  portal_api_url: http://portal-api.service-connectivity.com
+  portal_gui_protocol: http
+  portal_session_conf: |
+    {
+      "cookie_name": "portal_session",
+      "secret": "portal-secret",
+      "cookie_secure": false,
+      "storage": "kong",
+      "cookie_domain": "service-connectivity.com"
+    }
+  admin_gui_auth_conf : |
+    {                                      
+     "issuer": "https://accounts.google.com/.well-known/openid-configuration",        
+     "admin_claim": "email",
+     "client_id": ["16948355927-ndoe9dahvur9jvtdap40732bq0mv84hj.apps.googleusercontent.com"],                 
+     "client_secret": ["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"],
+     "authenticated_groups_claim": ["groups"],
+     "ssl_verify": false,
+     "leeway": 60,
+     "redirect_uri": ["http://manager.service-connectivity.com/"],
+     "login_redirect_uri": ["http://manager.service-connectivity.com/"],
+     "logout_methods": ["GET", "DELETE"],
+     "logout_query_arg": "logout",
+     "logout_redirect_uri": ["http://manager.service-connectivity.com/"],
+     "scopes": ["openid","profile","email","offline_access"],
+     "auth_methods": ["authorization_code"]
+    }
+  
+  #Database Information
+  pg_user: kong
+  pg_password: kong
+  pg_database: kongEnterprise
+  pg_host: postgres.databases
+  
+  # Super User Password
+  password: KongRul3z!
+
+admin:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: admin.service-connectivity.com
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+  http:
+    enabled: true
+    servicePort: 80
+    containerPort: 8001
+  tls:
+    enabled: true
+    servicePort: 443
+    containerPort: 8444
+    parameters:
+      - http2
+  ingress:
+    enabled: false
+    tls: CHANGEME-admin-tls-secret
+    hostname: admin.service-connectivity.com
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      external-dns.alpha.kubernetes.io/hostname: admin.service-connectivity.com
+      kubernetes.io/ingress.class: alb
+      #kubernetes.io/ingress.class: "kong"
+    path: /
+proxy:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: proxy.service-connectivity.com
+  http:
+    enabled: true
+    servicePort: 80
+    containerPort: 8000
+    parameters: []
+  tls:
+    enabled: true
+    servicePort: 443
+    containerPort: 8443
+    parameters:
+      - http2
+  stream: {}
+  ingress:
+    enabled: false
+    annotations: {}
+    path: /
+  externalIPs: []
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  vitals:
+    enabled: true
+  portal:
+    enabled: true
+    session_conf_secret: kong-session-config
+  rbac:
+    enabled: true
+    admin_gui_auth: openid-connect
+    session_conf_secret: kong-session-config
+  smtp:
+    enabled: false
+    portal_emails_from: none@example.com
+    portal_emails_reply_to: none@example.com
+    admin_emails_from: none@example.com
+    admin_emails_reply_to: none@example.com
+    smtp_admin_emails: none@example.com
+    smtp_host: smtp.example.com
+    smtp_port: 587
+    smtp_auth_type: ''
+    smtp_ssl: nil
+    smtp_starttls: true
+    auth:
+      smtp_username: '' # e.g. postmaster@example.com
+      smtp_password_secret: CHANGEME-smtp-password
+manager:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: manager.service-connectivity.com
+  http:
+    enabled: true
+    servicePort: 80
+    containerPort: 8002
+  tls:
+    enabled: false
+    servicePort: 8445
+    containerPort: 8445
+    parameters:
+      - http2
+  ingress:
+    enabled: false
+    tls: CHANGEME-manager-tls-secret
+    hostname: manager.kong.CHANGEME.example
+    annotations: {}
+    path: /
+  externalIPs: []
+portal:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: portal.service-connectivity.com
+  http:
+    enabled: true
+    servicePort: 80
+    containerPort: 8003
+    parameters: []
+  tls:
+    enabled: false
+    servicePort: 8446
+    containerPort: 8446
+    parameters:
+      - http2
+  ingress:
+    enabled: false
+    tls: CHANGEME-portal-tls-secret
+    hostname: portal.kong.CHANGEME.example
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+    path: /
+  externalIPs: []
+portalapi:
+  enabled: true
+  type: LoadBalancer
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: portal-api.service-connectivity.com
+  http:
+    enabled: true
+    servicePort: 80
+    containerPort: 8004
+    parameters: []
+  tls:
+    enabled: false
+    servicePort: 8447
+    containerPort: 8447
+    parameters:
+      - http2
+  ingress:
+    enabled: false
+    tls: CHANGEME-portalapi-tls-secret
+    hostname: portalapi.kong.CHANGEME.example
+    annotations:
+      kubernetes.io/ingress.class: "kong"
+    path: /
+  externalIPs: []
+postgresql:
+  enabled: false
+  postgresqlUsername: kong
+  postgresqlDatabase: kong
+  postgresqlPassword: kongkhiuTtjkhJKGLGLJHGzfzglhlvHJFKfhghj785966497HJouzg89bonbtvtdzk
+  service:
+    port: 5432
+ingressController:
+  enabled: true
+  installCRDs: false
+  env:
+    kong_admin_token: KongRul3z!
+    kong_workspace: IngressController
+
+podAnnotations: 
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "8100"
+  kuma.io/gateway: "enabled"

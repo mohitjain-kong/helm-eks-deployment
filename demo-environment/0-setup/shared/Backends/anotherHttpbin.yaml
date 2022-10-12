@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: just-another-httpbin
+  annotations:
+    ingress.kubernetes.io/service-upstream: "true"
+spec:
+  type: NodePort
+  ports:
+  - name: just-another-httpbin
+    targetPort: 8080
+    port: 8080
+    protocol: TCP
+  selector:
+    app: just-another-httpbin
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: just-another-httpbin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: just-another-httpbin
+  template:
+    metadata:
+      labels:
+        app: just-another-httpbin
+    spec:
+      containers:
+        - name: just-another-httpbin
+          image: svenwal/httpbin
+          ports:
+            - containerPort: 8080

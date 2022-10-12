@@ -1,0 +1,12 @@
+version: "3"
+services:
+  splunk:
+    image: splunk/splunk:8.0.4
+    container_name: splunk.monitoring
+    environment:
+      - SPLUNK_START_ARGS=--accept-license
+      - SPLUNK_PASSWORD=KongRul3z!
+    ports:
+      - 8120:8000
+      - 8121:10401
+      - 8122:8089

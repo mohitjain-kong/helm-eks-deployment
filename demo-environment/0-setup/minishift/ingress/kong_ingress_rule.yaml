@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kong-proxy
+spec:
+  tls:
+  - hosts:
+    - os-proxy.apim.eu
+    - os-admin.apim.eu
+    - os-ingress.apim.eu
+    secretName: apim-secret
+  rules:
+  - host: os-proxy.apim.eu
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kong-proxy
+            port: 
+              number: 8000
+  - host: os-admin.apim.eu
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kong-admin
+            port: 
+              number: 8001
+  - host: os-ingress.apim.eu
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kong-ingress-controller
+            port: 
+              number: 8001

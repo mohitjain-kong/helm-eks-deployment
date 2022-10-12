@@ -1,0 +1,121 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  type: NodePort
+  ports:
+  - name: prometheus
+    port: 9090
+    targetPort: 9090
+    nodePort: 31101
+    protocol: TCP
+  selector:
+    app: prometheus
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  type: NodePort
+  ports:
+  - name: grafana
+    port: 3000
+    targetPort: 3000
+    nodePort: 31100
+    protocol: TCP
+  selector:
+    app: grafana
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+      annotations:
+        kuma.io/gateway: "enabled"
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana
+          env:
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+          ports:
+            - containerPort: 3000
+              name: http
+              protocol: TCP
+          volumeMounts:
+          - name: grafana-dashboard-config
+            mountPath: /etc/grafana/provisioning/dashboards/dashboards.yml
+            subPath: dashboards.yml
+          - name: grafana-kong-dashboard
+            mountPath: /etc/grafana/provisioning/dashboards/kong/kong_dashboard.json
+            subPath: kong_dashboard.json
+          - name: grafana-datasources-config
+            mountPath: /etc/grafana/provisioning/datasources/kong_prometheus.yml
+            subPath: kong_prometheus.yml
+      volumes:
+        - name: grafana-dashboard-config
+          configMap:
+            name: grafana-dashboard-config
+            items:
+            - key: dashboards.yml
+              path: dashboards.yml
+        - name: grafana-kong-dashboard
+          configMap:
+            name: grafana-dashboard-config
+            items:
+            - key: kong_dashboard.json
+              path: kong_dashboard.json
+        - name: grafana-datasources-config
+          configMap:
+            name: grafana-datasources-config
+            items:
+            - key: kong_prometheus.yml
+              path: kong_prometheus.yml
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          args: [
+              "--config.file=/etc/prometheus/prometheus.yml",  "--storage.tsdb.path=/prometheus",
+            ]
+          ports:
+            - containerPort: 9000
+              name: http
+              protocol: TCP
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus/
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-conf

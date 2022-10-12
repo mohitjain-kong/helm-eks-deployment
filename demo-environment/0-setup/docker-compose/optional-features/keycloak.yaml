@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  postgres-keycloak:
+      image: postgres:12.2
+      container_name: postgres-keycloak
+      hostname: postgres-keycloak.idp
+      volumes:
+        - ~/.demo-env/keycloak/data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: KongRul3z!
+  keycloak:
+      image: quay.io/keycloak/keycloak:10.0.0
+      container_name: keycloak.idp
+      hostname: keycloak
+      command: -Dkeycloak.profile.feature.upload_scripts=enabled
+      environment:
+        DB_VENDOR: POSTGRES
+        DB_ADDR: postgres-keycloak
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_SCHEMA: public
+        DB_PASSWORD: KongRul3z!
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: KongRul3z!
+      ports:
+        - 8300:8080
+      depends_on:
+        - postgres-keycloak

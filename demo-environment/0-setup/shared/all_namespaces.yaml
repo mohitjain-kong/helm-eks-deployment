@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong-enterprise
+  labels:
+    kuma.io/sidecar-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backends
+  labels:
+    kuma.io/sidecar-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: databases
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: idp
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong-mesh-system
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kuma-demo
+  labels:
+    kuma.io/sidecar-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mesh-demo
+  labels:
+    kuma.io/sidecar-injection: enabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tracing
+---

@@ -1,0 +1,7 @@
+{
+  "cookie_name": "admin_session",
+  "secret": "admin-secret-sfkshgkjghdjkgdsl",
+  "cookie_secure": false,
+  "storage": "kong",
+  "cookie_domain": "service-connectivity.com"
+}

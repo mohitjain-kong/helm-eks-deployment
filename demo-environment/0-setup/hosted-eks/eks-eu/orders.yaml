@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-orders
+  annotations:
+    3000.service.kuma.io/protocol: http
+spec:
+  ports:
+  - name: backend-transactions
+    targetPort: 3000
+    port: 3000
+    protocol: TCP
+  selector:
+    app: backend-orders
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-orders
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-orders
+  template:
+    metadata:
+      labels:
+        app: backend-orders
+    spec:
+      containers:
+        - name: backend-orders
+          image: svenwal/bankong-backend-orders:0.2.0
+          ports:
+            - containerPort: 3000

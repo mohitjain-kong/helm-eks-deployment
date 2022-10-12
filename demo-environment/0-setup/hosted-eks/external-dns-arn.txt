@@ -1,0 +1,1 @@
+arn:aws:iam::151743893450:role/eksctl-kong-se-central-demo-addon-iamservice-Role1-SCPJQ1P0YJZS

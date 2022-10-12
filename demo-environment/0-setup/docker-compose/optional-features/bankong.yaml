@@ -1,0 +1,19 @@
+version: "3"
+services:
+ bankong-frontend:
+  image: svenwal/bankong-frontend:0.9.0
+  container_name: frontend.bankong
+  hostname: frontend.bankong
+  restart: on-failure
+ bankong-backend-transactions:
+  image: svenwal/bankong-backend-transactions:0.3.1
+  container_name: backend-transactions.bankong
+  hostname: backend-transactions.bankong
+  restart: on-failure
+  environment:
+   - BANKONG_BASE_PATH=/bankong
+ bankong-backend-orders:
+  image: svenwal/bankong-backend-orders:0.2.0
+  container_name: backend-orders.bankong
+  hostname: backend-orders.bankong
+  restart: on-failure

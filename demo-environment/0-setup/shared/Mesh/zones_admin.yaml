@@ -1,0 +1,9 @@
+apiVersion: kuma.io/v1alpha1
+kind: AccessRole
+metadata: 
+  name: zones-admin
+spec: 
+  rules: 
+    - access: 
+        - GENERATE_ZONE_CP_TOKEN
+        - GENERATE_DATAPLANE_TOKEN

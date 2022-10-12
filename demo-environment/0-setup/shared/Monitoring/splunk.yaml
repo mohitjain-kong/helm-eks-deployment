@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: splunk-ui
+spec:
+  type: NodePort
+  ports:
+  - name: splunk-ui
+    port: 8000
+    targetPort: 8000
+    nodePort: 31120
+    protocol: TCP
+  selector:
+    app: splunk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: splunk
+spec:
+  ports:
+  - name: splunk
+    port: 10401
+    targetPort: 10401
+    protocol: TCP
+  selector:
+    app: splunk
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: splunk-admin
+spec:
+  type: NodePort
+  ports:
+  - name: splunk-admin
+    port: 8089
+    targetPort: 8089
+    nodePort: 31122
+    protocol: TCP
+  selector:
+    app: splunk
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: hec
+ labels:
+   app: splunk
+   role: splunk_indexer
+   tier: indexer
+spec:
+ selector:
+   app: splunk
+   role: splunk_indexer
+   tier: indexer
+ ports:
+   - name: splunk-hec
+     port: 8088
+     targetPort: 8088
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: splunk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: splunk
+  template:
+    metadata:
+      labels:
+        app: splunk
+    spec:
+      containers:
+        - name: splunk
+          image: splunk/splunk:8.0.4
+          env:
+            - name: SPLUNK_START_ARGS
+              value: "--accept-license"
+            - name: SPLUNK_PASSWORD
+              value: KongRul3z!

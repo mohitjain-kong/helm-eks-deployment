@@ -1,0 +1,8 @@
+version: "3"
+services:
+ kaazing:
+  image: kongaaron/websocket-demo:2.1
+  container_name: kaazing
+  hostname: kaazing
+  ports:
+   - 8905:8050

@@ -1,0 +1,25 @@
+apiVersion: kuma.io/v1alpha1
+kind: ProxyTemplate
+mesh: default
+metadata: 
+  name: opa-ext-authz-filter
+spec: 
+  selectors: 
+    - match: 
+        kuma.io/service: '*'
+  conf: 
+    imports: 
+      - default-proxy
+    modifications: 
+      - httpFilter: 
+          match: 
+            origin: outbound
+            name: envoy.filters.http.router
+          operation: addBefore
+          value: "name: envoy.filters.http.header_to_metadata\ntyped_config:\n  \"@type\": type.googleapis.com/envoy.extensions.filters.http.header_to_metadata.v3.Config\n  request_rules:\n  - header: x-opa-authz\n    on_header_missing:\n      key: 'policy_type'\n      value: 'egress'\n"
+      - httpFilter: 
+          match: 
+            origin: outbound
+            name: envoy.filters.http.router
+          operation: addBefore
+          value: "name: envoy.filters.http.ext_authz\ntyped_config:\n  \"@type\": type.googleapis.com/envoy.extensions.filters.http.ext_authz.v3.ExtAuthz\n  metadata_context_namespaces:\n  - envoy.filters.http.header_to_metadata\n  transport_api_version: V3\n  with_request_body:\n    max_request_bytes: 8192\n    allow_partial_message: true\n  failure_mode_allow: false\n  grpc_service:\n    google_grpc:\n      target_uri: 127.0.0.1:9191\n      stat_prefix: ext_authz\n    timeout: 0.5s\n"
