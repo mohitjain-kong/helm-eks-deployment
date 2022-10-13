@@ -21,7 +21,7 @@ read
 cp values.yaml.template values.yaml
 
 echo -e "\n*** Installing Kong Enterprise"
-helm install kong-enterprise kong/kong  --set ingressController.installCRDs=false -f ./values.yaml -n kong-enterprise --version 2.9.1
+helm install kong-enterprise kong/kong  --set ingressController.installCRDs=false -f ./values.yaml -n kong-enterprise
 
 echo -e "\n ☕ Installation done - load balancers on AWS will need a while so we'll wait now for two minutes as we need their dns entries"
 sleep 120
@@ -29,7 +29,7 @@ sleep 120
 
 echo -e "\n*** Loadbalancer have been created and external dns is known - we are upgrading the Helm setup now to the created addresses"
 
-helm upgrade --install kong-enterprise kong/kong --set ingressController.installCRDs=false -f ./values.yaml -n kong-enterprise --version 2.9.1
+helm upgrade --install kong-enterprise kong/kong --set ingressController.installCRDs=false -f ./values.yaml -n kong-enterprise
 
 . ../../1-environment/eks.sh
 . ../../1-environment/shared.sh
