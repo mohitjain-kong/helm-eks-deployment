@@ -8,7 +8,7 @@ unset PORTAL_ADMIN_URL
 #do
 #  echo -e "Waiting until all AWS load balancers got a DNS attached"
 #  sleep 5
-  . ../../1-environment/eks.sh
+  . ../../1-environment/eks-cp.sh
   . ../../1-environment/shared.sh
 
 #done

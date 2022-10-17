@@ -11,9 +11,11 @@
 #   that are sent to both the admin API and Kong Manager, and any Dev Portal
 #   instances with authentication must create cookies that are sent to both
 #   the Portal and Portal API.
+
 image:
   repository: kong/kong-gateway
   tag: "latest"
+
 env:
   database: postgres
   pg_host: kong-hybrid-cp-postgresql.kong-hybrid-cp.svc.cluster.local
@@ -27,10 +29,8 @@ env:
   role: control_plane
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
-  admin_api_uri: http://a04c00044b301409c884530d46fc61ba-1605001264.eu-west-2.elb.amazonaws.com:8001
-  admin_gui_url: http://adf5dc7578dd24dc891ef2e521f74d76-1008393834.eu-west-2.elb.amazonaws.com:8002
-  portal_gui_host: :8003
-  portal_api_url: http://:8004
+  admin_api_uri: http://1.2.3.4:8001
+  admin_gui_url: http://1.2.3.4:8002
 admin:
   enabled: true
   type: LoadBalancer

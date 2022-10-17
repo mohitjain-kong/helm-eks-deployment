@@ -9,65 +9,35 @@
 #   that are sent to both the admin API and Kong Manager, and any Dev Portal
 #   instances with authentication must create cookies that are sent to both
 #   the Portal and Portal API.
-image:
-  repository: kong/kong-gateway
-  tag: 3.0.0.0-alpine
-  pullPolicy: IfNotPresent
 env:
   database: postgres
-  proxy_access_log: /dev/stdout
-  admin_access_log: /dev/stdout
-  admin_gui_access_log: /dev/stdout
-  portal_api_access_log: /dev/stdout
-  proxy_error_log: /dev/stderr
-  admin_error_log: /dev/stderr
-  admin_gui_error_log: /dev/stderr
-  portal_api_error_log: /dev/stderr
-  prefix: /kong_prefix/
-  ontrusted_lua: on
-  proxy_url: http://a3810de415ee44e74892b6e39493f674-620483967.eu-west-2.elb.amazonaws.com:80
-  admin_api_uri: http://a6db8aab390b547699c8412c44d73bea-1977260153.eu-west-2.elb.amazonaws.com:8001
-  admin_gui_url: http://a2c71ff30aabd46cdbd73a0f15bbbdf4-1548431893.eu-west-2.elb.amazonaws.com:8002
-  portal_gui_host: :8003
-  portal_api_url: http://:8004
-  portal_gui_protocol: http
-  #Database Information (if not using subchart  below)
   pg_host: kong-enterprise-postgresql.kong-enterprise.svc.cluster.local
   pg_user: kong
   pg_database: kong
-  pg_password:
-    valueFrom:
-      secretKeyRef:
-        name: kong-config-secret
-        key: password
-
-  # Super User Password
   password:
     valueFrom:
       secretKeyRef:
-        name: kong-config-secret
         key: kong_admin_password
-  # kong_admin_token:
-  #   valueFrom:
-  #     secretKeyRef:
-  #         name: kong-config-secret
-  #         key:  kong_admin_password
-# Information needed for sessions (RBAC in Manager and/or Dev Portal session)
-#  portal_session_conf:
-#    valueFrom:
-#      secretKeyRef:
-#        name: kong-config-secret
-#        key: portal_session_conf
-#  session_conf_secret:
-#    valueFrom:
-#      secretKeyRef:
-#        name: kong-config-secret
-#        key: admin_gui_session_conf
-#  admin_gui_session_conf:
-#    valueFrom:
-#      secretKeyRef:
-#        name: kong-config-secret
-#        key: admin_gui_session_conf
+        name: kong-config-secret
+  proxy_url: http://a249a3fe120c743fdba47ce359c37f57-1195191928.eu-west-2.elb.amazonaws.com:80
+  admin_api_uri: http://a5b3baa3d34d1457284eb4ac389c9ce1-1373658794.eu-west-2.elb.amazonaws.com:8001
+  admin_gui_url: http://a9210e05ece6c413a8bede1f2dc7515e-596962160.eu-west-2.elb.amazonaws.com:8002
+  portal_gui_host: :8003
+  portal_api_url: http://:8004
+  portal_gui_protocol: http
+image:
+  repository: kong/kong-gateway
+  tag: "latest"
+#dataplane config
+proxy:
+  enabled: true
+  type: LoadBalancer
+postgresql:
+  enabled: true
+  auth:
+    username: kong
+    database: kong
+    existingSecret: kong-postgresql
 admin:
   enabled: true
   type: LoadBalancer
@@ -125,7 +95,7 @@ enterprise:
   rbac:
     enabled: true
     admin_gui_auth: basic-auth
-    # admin_gui_auth_conf_secret: kong-config-secret
+    admin_gui_auth_conf_secret: kong-config-secret
     session_conf_secret: kong-config-secret
   smtp:
     enabled: false
@@ -215,20 +185,5 @@ portalapi:
       kubernetes.io/ingress.class: "kong"
     path: /
   externalIPs: []
-postgresql:
-  enabled: true
-  auth:
-    username: kong
-    database: kong
-    password: kong
-  service:
-    port: 5432
 ingressController:
   enabled: false
-  installCRDs: false
-  env:
-    kong_admin_token:
-      valueFrom:
-        secretKeyRef:
-          name: kong-enterprise-superuser-password #CHANGEME
-          key: password #CHANGEME

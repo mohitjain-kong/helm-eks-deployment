@@ -2,7 +2,7 @@ apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 
 metadata:
-  name: test-v3-merck-issue
+  name: mj-test-v3-merck
   region: eu-west-2
 
 nodeGroups:

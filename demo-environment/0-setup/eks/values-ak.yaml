@@ -1,0 +1,61 @@
+env:
+  database: postgres
+  pg_host: kong-postgresql.kong.svc.cluster.local
+  pg_user: kong
+  pg_database: kong
+  password:
+    valueFrom:
+      secretKeyRef:
+        key: kong_admin_password
+        name: kong-config-secret
+  admin_api_uri: http://:8001
+  admin_gui_url: http://:8002
+  log_level: debug
+  proxy_url: http://:80
+  portal_gui_host: :8003
+  portal_api_url: http://:8004
+#docker image config
+image:
+  repository: kong/kong-gateway
+  tag: "latest"
+#dataplane config
+proxy:
+  enabled: true
+  type: LoadBalancer
+postgresql:
+  enabled: true
+  auth:
+    username: kong
+    database: kong
+    existingSecret: kong-postgresql
+admin:
+  enabled: true
+  type: LoadBalancer
+  http:
+    enabled: true
+  tls:
+    enabled: false
+status:
+  enabled: true
+enterprise:
+  enabled: true
+  license_secret: kong-enterprise-license
+  vitals:
+    enabled: true
+  rbac:
+    enabled: true
+    admin_gui_auth: basic-auth
+    session_conf_secret: kong-config-secret
+manager:
+  enabled: true
+  type: LoadBalancer
+  http:
+    enabled: true
+  tls:
+    enabled: false
+portal:
+  enabled: false
+portalapi:
+  enabled: false
+ingressController:
+  enabled: false
