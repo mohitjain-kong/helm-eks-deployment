@@ -18,7 +18,7 @@ env:
   lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
-  proxy_url: http://a7e533febd1a74c9a8d7e87bdd0f63ff-2100724096.eu-west-2.elb.amazonaws.com:80
+  proxy_url: http://a77faf487452a4d2da87aa43bc4622ab-897163234.eu-west-2.elb.amazonaws.com:80
 proxy:
   enabled: true
   type: LoadBalancer

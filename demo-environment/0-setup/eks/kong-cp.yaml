@@ -16,9 +16,13 @@ image:
   tag: "latest"
 env:
   database: postgres
-  pg_host: kong-hybrid-cp-postgresql.kong-hybrid-cp.svc.cluster.local
+  # pg_host: kong-hybrid-cp-postgresql.kong-hybrid-cp.svc.cluster.local
+  # pg_user: kong
+  # pg_database: kong
+  pg_host: kong-merck.cluster-clnyeikrm0os.eu-west-2.rds.amazonaws.com
   pg_user: kong
-  pg_database: kong
+  pg_database: postgres
+  pg_password: kongkong
   password:
     valueFrom:
       secretKeyRef:
@@ -27,8 +31,8 @@ env:
   role: control_plane
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
-  admin_api_uri: http://a04c00044b301409c884530d46fc61ba-1605001264.eu-west-2.elb.amazonaws.com:8001
-  admin_gui_url: http://adf5dc7578dd24dc891ef2e521f74d76-1008393834.eu-west-2.elb.amazonaws.com:8002
+  admin_api_uri: http://adf98f6884c634098b8b99230d1bc023-809056493.eu-west-2.elb.amazonaws.com:8001
+  admin_gui_url: http://a28fcd4810b1047279a2774ab2cde673-1306965477.eu-west-2.elb.amazonaws.com:8002
   portal_gui_host: :8003
   portal_api_url: http://:8004
 admin:
@@ -64,7 +68,7 @@ proxy:
 secretVolumes:
   - kong-cluster-cert
 postgresql:
-  enabled: true
+  enabled: false
   auth:
     username: kong
     database: kong

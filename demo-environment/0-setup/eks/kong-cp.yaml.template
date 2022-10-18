@@ -18,9 +18,13 @@ image:
 
 env:
   database: postgres
-  pg_host: kong-hybrid-cp-postgresql.kong-hybrid-cp.svc.cluster.local
+  # pg_host: kong-hybrid-cp-postgresql.kong-hybrid-cp.svc.cluster.local
+  # pg_user: kong
+  # pg_database: kong
+  pg_host: kong-merck.cluster-clnyeikrm0os.eu-west-2.rds.amazonaws.com
   pg_user: kong
-  pg_database: kong
+  pg_database: postgres
+  pg_password: kongkong
   password:
     valueFrom:
       secretKeyRef:
@@ -64,7 +68,7 @@ proxy:
 secretVolumes:
   - kong-cluster-cert
 postgresql:
-  enabled: true
+  enabled: false
   auth:
     username: kong
     database: kong
