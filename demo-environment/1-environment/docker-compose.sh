@@ -1,0 +1,74 @@
+
+export DEMO_ENV=docker-compose
+export ADMIN_HOST=localhost
+export PROXY_HOST=$ADMIN_HOST
+export UDP_HOST=$ADMIN_HOST
+export MANAGER_HOST=$ADMIN_HOST
+export PORTAL_HOST=$ADMIN_HOST
+export PROXY_STREAM_TCP_HOST=$ADMIN_HOST
+export PORTAL_ADMIN_HOST=$ADMIN_HOST
+export ADMIN_PORT=8001
+export PROXY_PORT=8000
+export UDP_PORT=8008
+export PROXY_SSL_PORT=8443
+export HTTP2_PROXY_PORT=8680
+export HTTP2_PROXY_SSL_PORT=8681
+export MANAGER_PORT=8002
+export PORTAL_PORT=8003
+export PORTAL_ADMIN_PORT=8004
+export WEBSOCKET_PORT=8050
+export KONGMAP_PORT=8009
+export PROXY_STREAM_TCP_PORT=8007
+
+if [ "$ENABLE_PROMETHEUS_GRAFANA" = true ]
+then
+  export GRAFANA_HOST=$ADMIN_HOST
+  export GRAFANA_PORT=8100
+  export PROMETHEUS_HOST=$ADMIN_HOST
+  export PROMETHEUS_PORT=8101
+fi
+if [ "$ENABLE_SYSLOG" = true ]
+then
+  export SYSLOG_HOST=$ADMIN_HOST
+  export SYSLOG_PORT=8130
+fi
+if [ "$ENABLE_ELK" = true ]
+then
+  export KIBANA_HOST=$ADMIN_HOST
+  export KIBANA_PORT=8110
+fi
+if [ "$ENABLE_ELK" = true ]
+then
+  export GRAYLOG_HOST=$ADMIN_HOST
+  export GRAYLOG_PORT=8140 
+fi
+if [ "$ENABLE_SPLUNK" = true ]
+then
+  export SPLUNK_HOST=$ADMIN_HOST
+  export SPLUNK_PORT=8120
+  export SPLUNK_ADMIN_PORT=8122
+fi
+if [ "$ENABLE_LOCAL_KEYCLOAK" = true ]
+then
+  export KEYCLOAK_HOST=$ADMIN_HOST
+  export KEYCLOAK_PORT=8300 
+fi
+
+if [ "$ENABLE_UPSTREAM_TLS" = true ] ; 
+then
+  export UPSTREAM_TLS_HOST=$ADMIN_HOST
+  export UPSTREAM_TLS_GUI_PORT=8903
+  export UPSTREAM_TLS_BACKEND_PORT=8905
+fi
+
+if [ "$ENABLE_OPA" = true ] ; 
+then
+  export OPA_HOST=$ADMIN_HOST
+  export OPA_PORT=8303
+fi
+
+if [ "$ENABLE_ZIPKIN" = true ] ; 
+then
+  export ZIPKIN_HOST=$ADMIN_HOST
+  export ZIPKIN_PORT=8141
+fi
