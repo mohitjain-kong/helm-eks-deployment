@@ -13,6 +13,7 @@ image:
   tag: "latest"
 env:
   role: data_plane
+  headers: "off"
   cluster_control_plane: kong-hybrid-cp-kong-cluster.kong-hybrid-cp.svc.cluster.local:8005
   cluster_telemetry_endpoint: kong-hybrid-cp-kong-clustertelemetry.kong-hybrid-cp.svc.cluster.local:8006 # Enterprise-only
   lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt

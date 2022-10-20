@@ -80,8 +80,53 @@ services:
       redis_username: null
       second: null
       year: null
-    enabled: true
+    enabled: false
     name: rate-limiting
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      consumer_groups: null
+      dictionary_name: kong_rate_limiting_counters
+      enforce_consumer_groups: false
+      header_name: null
+      hide_client_headers: false
+      identifier: consumer
+      limit:
+      - 1
+      namespace: TaZWO4i1XO80jo3bRKJaAMfkzNdd8awr
+      path: null
+      redis:
+        cluster_addresses: null
+        connect_timeout: null
+        database: 0
+        host: mj-test-v3-merck.lj0igf.ng.0001.euw2.cache.amazonaws.com
+        keepalive_backlog: null
+        keepalive_pool_size: 30
+        password: null
+        port: 6379
+        read_timeout: null
+        send_timeout: null
+        sentinel_addresses: null
+        sentinel_master: null
+        sentinel_password: null
+        sentinel_role: null
+        sentinel_username: null
+        server_name: null
+        ssl: false
+        ssl_verify: false
+        timeout: 2000
+        username: null
+      retry_after_jitter_max: 0
+      strategy: redis
+      sync_rate: 0
+      window_size:
+      - 30
+      window_type: sliding
+    enabled: true
+    name: rate-limiting-advanced
     protocols:
     - grpc
     - grpcs
