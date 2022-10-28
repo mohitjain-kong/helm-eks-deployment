@@ -18,6 +18,10 @@ env:
   lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
+  # client_ssl: "on"
+  # client_ssl_cert: /etc/secrets/kong-cluster-cert-upstream/tls.crt
+  # client_ssl_cert_key: /etc/secrets/kong-cluster-cert-upstream/tls.key
+  # lua_ssl_trusted_certifcate: /etc/secrets/kong-cluster-cert-upstream/tls.crt
   proxy_url:  http://1.2.3.4
 
 proxy:
@@ -34,6 +38,7 @@ manager:
 
 secretVolumes:
   - kong-cluster-cert
+  - kong-cluster-cert-upstream
 
 ingressController:
   enabled: false
@@ -49,3 +54,12 @@ portal:
   enabled: false
 portalapi:
   enabled: false
+  
+# For datadog
+# proxy is the name of the container in the pod that we want to
+# run against.
+# podAnnotations:
+#   ad.datadoghq.com/proxy.check_names: "[\"kong\"]"
+#   ad.datadoghq.com/proxy.init_configs: "[{}]"
+#   ad.datadoghq.com/proxy.instances: "[{\"kong_status_url\": \"http://adf98f6884c634098b8b99230d1bc023-809056493.eu-west-2.elb.amazonaws.com:8001/status/\"}]"
+#   ad.datadoghq.com/proxy.logs: "[{\"source\":\"kong\",\"service\":\"kong-hybrid-dp-kong\"}]"

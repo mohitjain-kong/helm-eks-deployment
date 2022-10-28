@@ -47,7 +47,7 @@ services:
       key_in_header: true
       key_in_query: true
       key_names:
-      - apikey
+      - x-ibm-client-id
       run_on_preflight: true
     enabled: true
     name: key-auth-enc

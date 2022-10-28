@@ -42,7 +42,7 @@ postgresql:
   auth:
     username: kong
     database: kong
-    existingSecret: kong-postgresql
+    existingSecret: kong-enterprise-postgresql
 admin:
   enabled: true
   type: LoadBalancer

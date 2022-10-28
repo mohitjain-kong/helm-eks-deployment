@@ -1,0 +1,23 @@
+datadog:
+  # create a free account and get the api key and site address
+  site: datadoghq.eu
+  apiKey: 26a4c870746479fe9e2d36817a137ec7
+  # enable log collection on all containers
+  logs:
+    enabled: true
+    containerCollectAll: true
+
+  kubelet:
+    host:
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+   # Turn off tls for local kubernetes (e.g. minikube)
+    tlsVerify: false
+
+  # Turn on statsd enpoint for use with the kong datadog plugin
+  # This gives you the API request response stats
+  dogstatsd:
+    port: 8125
+    useHostPort: true
+    nonLocalTraffic: true

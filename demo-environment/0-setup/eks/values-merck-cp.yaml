@@ -11,20 +11,15 @@
 #   that are sent to both the admin API and Kong Manager, and any Dev Portal
 #   instances with authentication must create cookies that are sent to both
 #   the Portal and Portal API.
-
 image:
   repository: kong/kong-gateway
   tag: "latest"
-
 env:
   database: postgres
-  # pg_host: kong-hybrid-cp-postgresql.kong-hybrid-cp.svc.cluster.local
-  # pg_user: kong
-  # pg_database: kong
-  pg_host: kong-merck.cluster-clnyeikrm0os.eu-west-2.rds.amazonaws.com
-  pg_user: kong
-  pg_database: postgres
-  pg_password: kongkong
+  pg_host: hostname.rds.amazonaws.com # CHANGEME
+  pg_user: kong # CHANGEME
+  pg_database: postgres # CHANGEME
+  pg_password: example-password # CHANGEME
   password:
     valueFrom:
       secretKeyRef:
@@ -33,12 +28,8 @@ env:
   role: control_plane
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
-  # client_ssl: "on"
-  # client_ssl_cert: /etc/secrets/kong-cluster-cert-upstream/tls.crt
-  # client_ssl_cert_key: /etc/secrets/kong-cluster-cert-upstream/tls.key
-  # lua_ssl_trusted_certifcate: /etc/secrets/kong-cluster-cert/tls.crt
-  admin_api_uri: http://1.2.3.4:8001
-  admin_gui_url: http://1.2.3.4:8002
+  admin_api_uri: http://example.elb.amazonaws.com:8001 # CHANGEME
+  admin_gui_url: http://example.eu-west-2.elb.amazonaws.com:8002 # CHANGEME
 admin:
   enabled: true
   type: LoadBalancer
@@ -70,20 +61,13 @@ clustertelemetry:
 proxy:
   enabled: false
 secretVolumes:
-  - kong-cluster-cert
-  - kong-cluster-cert-upstream
+  - kong-cluster-cert 
 postgresql:
   enabled: false
-  auth:
-    username: kong
-    database: kong
-    existingSecret: kong-hybrid-cp-postgresql
 ingressController:
   enabled: false
 enterprise:
   enabled: true
-  # See instructions regarding enterprise licenses at https://github.com/Kong/charts/blob/master/charts/kong/README.md#kong-enterprise-license
-  # license_secret: kong-hybrid-cp-license # CHANGEME
   vitals:
     enabled: true
   rbac:

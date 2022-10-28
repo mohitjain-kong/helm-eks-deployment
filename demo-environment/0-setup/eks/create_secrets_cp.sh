@@ -23,6 +23,8 @@ kubectl create secret generic kong-hybrid-cp-license -n kong-hybrid-cp --from-fi
 echo -e "\n*** Create a secret containing the certificates for the Control Plane"
 kubectl create secret tls kong-cluster-cert --cert=cluster.crt --key=cluster.key -n kong-hybrid-cp
 
+kubectl create secret tls kong-cluster-cert-upstream --cert=tls.crt --key=tls.key -n kong-hybrid-cp
+
 
 # helm upgrade -i kong kong/kong -n kong-enterprise -f ./values-ak.yaml
 

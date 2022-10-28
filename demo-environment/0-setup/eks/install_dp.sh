@@ -16,3 +16,6 @@ helm upgrade --install kong-hybrid-dp kong/kong -n kong-hybrid-dp --values ./kon
 . ../../1-environment/eks-dp.sh
 . ../../1-environment/shared.sh
 
+
+# echo -e "\n*** Installing datadog"
+# helm install kong-hybrid-dp-datadog datadog/datadog -n kong-hybrid-dp --values ./datadog-values.yaml
