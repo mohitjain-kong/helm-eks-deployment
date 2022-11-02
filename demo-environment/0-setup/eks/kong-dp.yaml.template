@@ -18,10 +18,10 @@ env:
   lua_ssl_trusted_certificate: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
-  # client_ssl: "on"
-  # client_ssl_cert: /etc/secrets/kong-cluster-cert-upstream/tls.crt
-  # client_ssl_cert_key: /etc/secrets/kong-cluster-cert-upstream/tls.key
-  # lua_ssl_trusted_certifcate: /etc/secrets/kong-cluster-cert-upstream/tls.crt
+  # client_ssl: "on" # enable it on when setting MTLS between upstream and kong
+  # client_ssl_cert: /etc/secrets/kong-cluster-cert-upstream/tls.crt # once client_ssl enabled pass certs for MTLS between upstream and kong
+  # client_ssl_cert_key: /etc/secrets/kong-cluster-cert-upstream/tls.key # once client_ssl enabled pass certs for MTLS between upstream and kong
+  # lua_ssl_trusted_certifcate: /etc/secrets/kong-cluster-cert-upstream/tls.crt # once client_ssl enabled set upstream cert
   proxy_url:  http://1.2.3.4
 
 proxy:
@@ -54,7 +54,7 @@ portal:
   enabled: false
 portalapi:
   enabled: false
-  
+
 # For datadog
 # proxy is the name of the container in the pod that we want to
 # run against.

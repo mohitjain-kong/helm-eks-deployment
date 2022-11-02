@@ -20,6 +20,7 @@ env:
   # pg_user: kong
   # pg_database: kong
   # pg_host: kong-merck.cluster-clnyeikrm0os.eu-west-2.rds.amazonaws.com
+  # Set below pg host making postgreSQL false when using RDS
   pg_host: kong-merck-instance-1.clnyeikrm0os.eu-west-2.rds.amazonaws.com
   pg_user: kong
   pg_database: postgres
@@ -32,10 +33,10 @@ env:
   role: control_plane
   cluster_cert: /etc/secrets/kong-cluster-cert/tls.crt
   cluster_cert_key: /etc/secrets/kong-cluster-cert/tls.key
-  # client_ssl: "on"
-  # client_ssl_cert: /etc/secrets/kong-cluster-cert-upstream/tls.crt
-  # client_ssl_cert_key: /etc/secrets/kong-cluster-cert-upstream/tls.key
-  # lua_ssl_trusted_certifcate: /etc/secrets/kong-cluster-cert/tls.crt
+  # client_ssl: "on" # enable it on when setting MTLS between upstream and kong
+  # client_ssl_cert: /etc/secrets/kong-cluster-cert-upstream/tls.crt # once client_ssl enabled pass certs for MTLS between upstream and kong
+  # client_ssl_cert_key: /etc/secrets/kong-cluster-cert-upstream/tls.key # once client_ssl enabled pass certs for MTLS between upstream and kong
+  # lua_ssl_trusted_certifcate: /etc/secrets/kong-cluster-cert-upstream/tls.crt # once client_ssl enabled set upstream cert
   admin_api_uri: http://adf98f6884c634098b8b99230d1bc023-809056493.eu-west-2.elb.amazonaws.com:8001
   admin_gui_url: http://a28fcd4810b1047279a2774ab2cde673-1306965477.eu-west-2.elb.amazonaws.com:8002
   portal_gui_host: :8003
